@@ -1,0 +1,99 @@
+{
+  "valid_dates": { "checkin": "2026-08-15", "checkout": "2026-08-18" },
+  "cases": [
+    {
+      "id": "DG-01",
+      "title": "Valid booking is accepted and stored exactly as sent",
+      "kind": "create",
+      "dates": { "checkin": "2026-08-15", "checkout": "2026-08-18" },
+      "expect": "accept",
+      "severity": "control"
+    },
+    {
+      "id": "DG-02",
+      "title": "Checkout before checkin is rejected on create",
+      "kind": "create",
+      "dates": { "checkin": "2026-08-15", "checkout": "2026-08-12" },
+      "expect": "reject",
+      "severity": "critical",
+      "why": "The BK-1043 case: checkin 15 Aug, checkout 12 Aug, nights -3."
+    },
+    {
+      "id": "DG-03",
+      "title": "Zero-night stay (checkout = checkin) is rejected",
+      "kind": "create",
+      "dates": { "checkin": "2026-08-15", "checkout": "2026-08-15" },
+      "expect": "reject",
+      "severity": "medium",
+      "why": "Assumption: Nuzul does not sell day-use stays. Confirm with the team."
+    },
+    {
+      "id": "DG-04",
+      "title": "Impossible calendar date (30 Feb) is rejected, not rolled over",
+      "kind": "create",
+      "dates": { "checkin": "2026-02-28", "checkout": "2026-02-30" },
+      "expect": "reject",
+      "severity": "high",
+      "why": "A silent rollover produces a real-looking but wrong date."
+    },
+    {
+      "id": "DG-05",
+      "title": "Day/month string 12/08/2026 is rejected, not reinterpreted",
+      "kind": "create",
+      "dates": { "checkin": "2026-08-15", "checkout": "12/08/2026" },
+      "expect": "reject",
+      "severity": "critical",
+      "why": "Same format as BK-1043. A caller in Riyadh means 12 August."
+    },
+    {
+      "id": "DG-06",
+      "title": "Non-date text is rejected",
+      "kind": "create",
+      "dates": { "checkin": "2026-08-15", "checkout": "abc" },
+      "expect": "reject",
+      "severity": "high"
+    },
+    {
+      "id": "DG-07",
+      "title": "Empty checkout is rejected",
+      "kind": "create",
+      "dates": { "checkin": "2026-08-15", "checkout": "" },
+      "expect": "reject",
+      "severity": "high",
+      "why": "What a voice agent may send when it did not catch the date."
+    },
+    {
+      "id": "DG-08",
+      "title": "Missing bookingdates is rejected with 400, not a server crash",
+      "kind": "create",
+      "dates": null,
+      "expect": "reject",
+      "severity": "medium"
+    },
+    {
+      "id": "DG-09",
+      "title": "PATCH cannot move checkout before checkin",
+      "kind": "patch",
+      "dates": { "checkin": "2026-08-15", "checkout": "2026-08-12" },
+      "expect": "reject",
+      "severity": "critical",
+      "why": "The path used when a caller changes their checkout on the phone."
+    },
+    {
+      "id": "DG-10",
+      "title": "PUT cannot replace a booking with reversed dates",
+      "kind": "put",
+      "dates": { "checkin": "2026-08-20", "checkout": "2026-08-16" },
+      "expect": "reject",
+      "severity": "critical"
+    },
+    {
+      "id": "DG-11",
+      "title": "PATCH without a token is refused and changes nothing",
+      "kind": "patch_no_token",
+      "dates": { "checkin": "2026-08-15", "checkout": "2026-08-20" },
+      "expect": "forbidden",
+      "severity": "control"
+    }
+  ]
+}
