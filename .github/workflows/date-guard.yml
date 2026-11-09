@@ -1,0 +1,29 @@
+name: Booking Date Guard
+
+# Runs on every push and pull request, and every morning against staging.
+# A failing check turns the run red, so a release can't go out without it.
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run date checks against staging
+        run: python3 guard.py
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: date-guard-report
+          path: |
+            report.md
+            report.json
